@@ -1,0 +1,40 @@
+/***********************************************************************
+* Implemenation File:	Velocity : An object in motion in a direction
+* Author:				Daniel R. Thomson
+* Summary:
+*    The speed at which an object moves in a direction, inlcuding inertia
+************************************************************************/
+
+#include "velocity.h"
+
+/********************************************
+* VELOCITY :: DEFAULT CONSTRUCTOR
+********************************************/
+Velocity::Velocity() : dX(0.0), dY(0.0)
+{ }
+
+/********************************************
+* VELOCITY :: NON DEFAULT CONSTRUCTOR
+********************************************/
+Velocity::Velocity(float dX, float dY)
+{
+	setDx(dX);
+	setDy(dY);
+}
+
+/********************************************
+* VELOCITY :: Set Velocity X coordinate
+********************************************/
+void Velocity::setDx(float dX)
+{
+	this->dX = dX;
+}
+
+/********************************************
+* VELOCITY :: Set Velocity Y coordinate
+********************************************/
+void Velocity::setDy(float dY)
+{
+	this->dY = dY;
+}
+

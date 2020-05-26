@@ -1,0 +1,75 @@
+/***********************************************************************
+ * Implementation File:  Ship.h - A class representing the Ship
+ * Author:		 Daniel R. Thomson
+ * Summary:	         An object that fly and fire bullets
+ ************************************************************************/
+
+#include "ship.h"
+float Ship::angle = ANGLE_START; // static float angle
+float Ship::thrustAmount = THRUST_AMOUNT; //static float thrustAmount;
+
+/********************************************
+ * Ship :: DEFAULT CONSTRUCTOR
+ ********************************************/
+Ship::Ship(): FlyingObject()
+{
+}
+
+/********************************************
+ * Ship :: NON DEFAULT CONSTRUCTOR
+ ********************************************/
+Ship::Ship(const Point pos): FlyingObject(pos, motion)
+{
+  setAngle(getRotation());
+}
+
+/********************************************
+ * Ship :: rotate Left
+ ********************************************/
+void Ship::rotateLeft()
+{
+  setAngle(getAngle() + ROTATE_AMOUNT);
+}
+
+/********************************************
+ * Ship :: rotate Right
+ ********************************************/
+void Ship::rotateRight()
+{	
+  setAngle(getAngle() - ROTATE_AMOUNT);
+}
+
+/********************************************
+ * Ship :: move in any given direction
+ ********************************************/
+void Ship::applyThrust()
+{
+  setPoint(getPoint());
+  float angInRad = (M_PI / 180.0 * getAngle());
+  
+  float dx = thrustAmount * (-sin(angInRad));
+  float dy = thrustAmount * (cos(angInRad));
+  motion.setDx(dx + motion.getDx());
+  motion.setDy(dy + motion.getDy());
+  
+  //TODO : this
+  /*
+    if (abs(dx + motion.getDx()) > 5)
+    {
+    motion.setDx(5);
+    }
+    else
+    {
+    
+    }
+    if (abs(dy + motion.getDy()) > 5)
+    {
+    motion.setDy(5);
+    }
+    else
+    {
+    }
+  */  
+}
+
+

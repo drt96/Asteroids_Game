@@ -1,0 +1,30 @@
+/***********************************************************************
+* Implementation File:	SmallRock.cpp
+* Author:				Daniel R. Thomson
+* Summary:				Class for Small astroids
+************************************************************************/
+
+#include "smallRock.h"
+
+int SmallRock::rotation = SMALL_ROCK_SPIN; // static int rotation
+
+/*********************************************
+* SmallRock :: Default Constructor
+*********************************************/
+SmallRock::SmallRock(): Rock()
+{
+}
+
+/*********************************************
+* SmallRock :: Non-Default Constructor
+*********************************************/
+SmallRock::SmallRock(const Point pos) : Rock(pos, motion)
+{
+}
+
+/*********************************************
+* SmallRock :: Denstructor
+*********************************************/
+SmallRock::~SmallRock()
+{
+}

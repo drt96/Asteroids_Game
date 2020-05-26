@@ -1,0 +1,39 @@
+/***********************************************************************
+ * Header File:	Rock.h
+ * Author:	Daniel R. Thomson
+ * Summary:	Abstract parent class for rock type classes
+ ************************************************************************/
+
+#ifndef ROCK_H
+#define ROCK_H
+
+#define BIG_ROCK_SIZE 16
+#define MEDIUM_ROCK_SIZE 8
+#define SMALL_ROCK_SIZE 4
+
+#define BIG_ROCK_SPIN 2
+#define MEDIUM_ROCK_SPIN 5
+#define SMALL_ROCK_SPIN 10
+
+#include "flyingObject.h"
+
+class  Rock: 
+public FlyingObject
+{
+ public:
+  Rock();
+  Rock(const Point pos, const Velocity motion);
+  ~Rock();
+  
+  //Pure Virtual functions
+  virtual void draw() = 0;
+  virtual void hit() = 0;
+  
+  //Overidden virtual function
+  virtual void advance()
+  {}
+  
+ protected:
+};
+
+#endif /* rock_h */

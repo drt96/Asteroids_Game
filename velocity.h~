@@ -1,0 +1,33 @@
+/***********************************************************************
+* Header File:  Velocity : Motion in a direction
+* Author:		Daniel R. Thomson
+* Summary:
+*    The speed at which an object moves in a direction, inlcuding inertia
+************************************************************************/
+
+#ifndef VELOCITY_H
+#define VELOCITY_H
+
+class Velocity
+{
+public:
+	Velocity();
+	Velocity(float dX, float dY);
+
+	~Velocity() {}
+
+	//getters
+	float getDx() const { return dX; }
+	float getDy() const { return dY; }
+
+	//setters
+	void setDx(float dX);
+	void setDy(float dY);
+
+private:
+	float dX;
+	float dY;
+};
+
+#endif //velocity.h
+

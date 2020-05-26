@@ -1,0 +1,36 @@
+/***********************************************************************
+* Header File:	MediumRock.h
+* Author:		Daniel R. Thomson
+* Summary:		Class for Medium astroids
+************************************************************************/
+
+#ifndef MEDIUMROCK_H
+#define MEDIUMROCK_H
+
+#include "rock.h"
+
+class MediumRock:
+	public Rock
+{
+public:
+	MediumRock();
+	MediumRock(const Point pos);
+	~MediumRock();
+
+	//overidden method
+	virtual void draw()
+	{
+		drawMediumAsteroid(pos, rotation);
+		rotation += 5;
+	}
+
+	virtual void hit()
+	{
+		setAlive(false);
+	}
+
+private:
+	static int rotation;
+};
+
+#endif /*MEDIUMROCK_H*/

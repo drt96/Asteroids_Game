@@ -1,0 +1,47 @@
+/***********************************************************************
+ * Header File:	Bullet.h
+ * Author:	Daniel R. Thomson
+ * Summary:	This is a projectile.
+ ************************************************************************/
+
+#ifndef bullet_h
+#define bullet_h
+
+#define BULLET_SPEED 5
+#define BULLET_LIFE 40
+
+#include "flyingObject.h"
+
+#define BULLET_SPEED 10.0
+
+class Bullet :
+public FlyingObject
+{
+ public:
+  Bullet();
+  Bullet(const Point pos);
+  ~Bullet();
+
+  //getters
+  int getLifespan() { return lifespan; }
+
+  //setters
+  void setLifespan(int lifespan) { this->lifespan = lifespan; }
+  
+  //methods
+  void fire(Point pos, float angle, Velocity speed);
+  
+  //virtual function
+  virtual void draw()
+  {
+    drawDot(pos);
+  }
+  
+  virtual void advance()
+  {}
+  
+ private:
+	 int lifespan;
+};
+
+#endif //BULLET_H

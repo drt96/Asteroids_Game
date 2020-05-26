@@ -1,0 +1,68 @@
+/***********************************************************************
+ * Header File:  Ship.h - A class representing the Ship
+ * Author:	 Daniel R. Thomson
+ * Summary:	 An object that fly and fire bullets
+ ************************************************************************/
+#ifndef SHIP_H
+#define SHIP_H
+
+#define SHIP_SIZE 10
+
+#define ROTATE_AMOUNT 6
+#define THRUST_AMOUNT 0.5
+
+#define ANGLE_MAX 360
+#define ANGLE_MIN 0
+#define ANGLE_START 90
+#define ANGLE_SHIFT 60
+
+#include "flyingObject.h"
+
+#include "velocity.h"
+#include "point.h"
+#include "uiDraw.h"
+
+/*********************************************
+ * Ship
+ * A rocket ship of great and epic ability.
+ *********************************************/
+class Ship: public FlyingObject
+{
+ public:
+  Ship();
+  Ship(const Point pos);
+  
+  ~Ship() { }
+  
+  //getters
+  float getAngle() const { return angle; }
+  float getRotation() const { return rotation; }
+  bool canThrust() const { return thrust; };
+  
+  //setters
+  void setThrust(bool thrust) { this->thrust = thrust; }
+  void setAngle(float angle) { this->angle = angle; }
+  void setRotation(float rotation) { this->rotation = rotation; }
+  
+  //methods
+  void rotateLeft(); //move left
+  void rotateRight(); //move right
+  void applyThrust(); //forward motion
+  
+  //Overridden virtual methods
+  virtual void advance()
+  {}
+  
+  virtual void draw()
+  {
+    drawShip(pos, getAngle(), canThrust());
+  }
+  
+ private:
+  bool thrust;
+  static float thrustAmount;
+  static float angle;
+  static float rotation;
+};
+
+#endif/*SHIP_H*/

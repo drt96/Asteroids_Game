@@ -1,0 +1,39 @@
+/***********************************************************************
+ * Header File:	bigRock.h
+ * Author:	Daniel R. Thomson
+ * Summary:	Class for large astroids
+ ************************************************************************/
+
+#ifndef BIGROCK_H
+#define BIGROCK_H
+
+#include "rock.h"
+
+class BigRock :
+public Rock
+{
+ public:
+  BigRock();
+  BigRock(const Point pos, const Velocity motion);
+  ~BigRock();
+  
+  //overidden method
+  virtual void draw()
+  {
+    drawLargeAsteroid(pos, rotation);
+    rotation += 2;
+  }
+  
+  virtual void hit()
+  {
+    setAlive(false);
+  }
+  
+  virtual void advance()
+  {}
+  
+ private:
+  static int rotation;
+};
+
+#endif /*BIGROCK_H*/

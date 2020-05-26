@@ -1,0 +1,370 @@
+/*********************************************************************
+ * File: game.cpp
+ * Description: Contains the implementaiton of the game class
+ *  methods.
+ *
+ *********************************************************************/
+
+#include "game.h"
+
+// These are needed for the getClosestDistance function...
+#include <limits>
+#include <algorithm>
+using namespace std;
+
+#define OFF_SCREEN_BORDER_AMOUNT 5
+
+/***************************************
+* GAME CONSTRUCTOR
+***************************************/
+Game::Game(Point tl, Point br)
+	: topLeft(tl), bottomRight(br), ship()
+{
+	for (int i = 0; i < 5; i++)
+	{
+		rocks.push_back(createRock()); 
+	}
+}
+
+/****************************************
+* GAME DESTRUCTOR
+****************************************/
+Game :: ~Game()
+{
+	for (int i = 0; i < rocks.size(); i++)
+	{
+		if (rocks[i] != NULL)
+		{
+			delete rocks[i];
+			rocks[i] = NULL;
+		}
+		rocks.clear();
+	}
+	
+	for (int i = 0; i < bullets.size(); i++)
+	{
+		if (bullets[i] != NULL)
+		{
+			delete bullets[i];
+			bullets[i] = NULL;
+		}
+		bullets.clear();
+	}
+}
+
+/***************************************
+* GAME :: ADVANCE
+* advance the game one unit of time
+***************************************/
+void Game::advance()
+{
+	advanceRocks();
+	advanceBullets();
+	advanceShip();
+
+	handleCollisions();
+	cleanUpZombies();
+}
+
+/***************************************
+* GAME :: ADVANCE BULLETS
+* Go through each bullet and advance it.
+***************************************/
+void Game::advanceBullets()
+{
+	// Move each of the bullets forward if it is alive
+	for (int i = 0; i < bullets.size(); i++)
+	{
+		if (bullets[i]->isAlive())
+		{
+			// this bullet is alive, so tell it to move forward
+			bullets[i]->FlyingObject::advance(wrapAround(bullets[i]->getPoint()));
+			bullets[i]->setLifespan((bullets[i]->getLifespan() - 1));
+
+			if (bullets[i]->getLifespan() <= 0)
+			{
+				bullets[i]->kill();
+			}
+		}
+	}
+}
+
+/**************************************************************************
+* GAME :: ADVANCE Rock
+*
+**************************************************************************/
+void Game::advanceRocks()
+{
+
+	for (int i = 0; i < rocks.size(); i++)
+	{
+		// we have a rock, make sure it's alive
+		if (rocks[i]->isAlive())
+		{
+			// move it forward
+			rocks[i]->FlyingObject::advance(wrapAround(rocks[i]->getPoint()));
+		}
+		else
+		{
+			rocks[i]->kill();
+		}
+	}	
+}
+
+/**************************************************************************
+* GAME :: ADVANCE SHIP
+* 
+**************************************************************************/
+void Game::advanceShip()
+{
+	ship.FlyingObject::advance(wrapAround(ship.getPoint())); 
+}
+
+/**************************************************************************
+* GAME :: CREATE Rock
+* Create a rock 
+**************************************************************************/
+Rock* Game::createRock()
+{
+	Rock* newRock = NULL;
+	//int pickRock = random(1, 5);
+
+	Point origin;
+	Velocity direction;
+	
+		//randomise the selection for left of right of screen
+		double leftRight = random(1, 10000); 
+		if (leftRight > 5000) // left
+		{
+			origin.setX(topLeft.getX());
+			origin.setY(random(bottomRight.getY(), bottomRight.getX()));
+			direction.setDx(1);
+		}
+		else
+		{
+			//or right
+			origin.setX(topLeft.getY());
+			origin.setY(random(bottomRight.getY(), bottomRight.getX()));
+			direction.setDx(-1);
+		}		
+		direction.setDy(random(-3.0, 3.0));
+
+	newRock = new BigRock(origin, direction);
+
+	return newRock;
+}
+
+/**************************************************************************
+* GAME :: Wrap Around
+* Determines if a given point is off the screen and returns int's for
+* advancing logic.
+**************************************************************************/
+int Game::wrapAround(const Point & point)
+{
+	if ((point.getX() >= bottomRight.getX() + OFF_SCREEN_BORDER_AMOUNT) 
+		|| (point.getX() <= topLeft.getX() - OFF_SCREEN_BORDER_AMOUNT))
+	{
+		return 1;
+	}
+	else if ((point.getY() >= topLeft.getY() + OFF_SCREEN_BORDER_AMOUNT)
+		|| (point.getY() <= bottomRight.getY() - OFF_SCREEN_BORDER_AMOUNT))
+	{
+		return 2;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+/**************************************************************************
+* GAME :: HANDLE COLLISIONS
+* Check for a collision between a Rock and a bullet.
+**************************************************************************/
+void Game::handleCollisions()
+{
+	// now check for a hit (if it is close enough to any live bullets)
+	for (int i = 0; i < bullets.size(); i++)
+	{
+		for (int j = 0; j < rocks.size(); j++)
+		{
+			if (bullets[i]->isAlive())
+			{
+				// this bullet is alive, see if its too close
+
+				// check if the rock is at this point (in case it was hit)
+				if (rocks[j] != NULL && rocks[j]->isAlive())
+				{
+					// BTW, this logic could be more sophisiticated, but this will
+					// get the job done for now...
+					if (fabs(bullets[i]->getPoint().getX() - rocks[j]->getPoint().getX()) < CLOSE_ENOUGH
+						&& fabs(bullets[i]->getPoint().getY() - rocks[j]->getPoint().getY()) < CLOSE_ENOUGH)
+					{
+						//we have a hit!
+						rocks[j]->hit();
+
+						// the bullet is dead as well
+						bullets[i]->kill();
+					}
+				}
+			} // if bullet is alive
+		}
+	} // for bullets
+}
+
+/**************************************************************************
+* GAME :: CLEAN UP ZOMBIES
+* Remove any dead objects (take bullets out of the list, deallocate bird)
+**************************************************************************/
+void Game::cleanUpZombies()
+{
+		vector<Rock*>::iterator rockIt = rocks.begin();
+
+		while (rockIt != rocks.end())
+		{
+			Rock* pRock = *rockIt;
+
+			// check for destroyed rock
+			if (pRock != NULL && !pRock->isAlive())
+			{
+				// the rock is destroyed, but the memory is not freed up yet
+				delete *rockIt;
+				*rockIt = NULL;
+				rockIt = rocks.erase(rockIt);
+			}
+			else
+			{
+				rockIt++;
+			}
+		} 
+
+		// Look for dead bullets
+		vector<Bullet*>::iterator bulletIt = bullets.begin();
+
+		while (bulletIt != bullets.end())
+		{
+			Bullet* pBullet = *bulletIt;
+
+			if (!pBullet->isAlive())
+			{
+				// If we had a list of pointers, we would need to delete the memory here...
+				delete *bulletIt;
+				*bulletIt = NULL;
+				// remove from list and advance
+				bulletIt = bullets.erase(bulletIt);
+			}
+			else
+			{
+				bulletIt++; // advance
+			}
+		}
+}
+
+/***************************************
+* GAME :: HANDLE INPUT
+* accept input from the user
+***************************************/
+void Game::handleInput(const Interface & ui)
+{
+	// Change the direction of the rifle
+	if (ui.isLeft())
+	{
+		ship.rotateLeft();
+	}
+
+	if (ui.isRight())
+	{
+		ship.rotateRight();
+	}
+
+	// Check for "Spacebar
+	if (ui.isSpace())
+	{
+		Bullet* newBullet = new Bullet(ship.getPoint());
+		newBullet->fire(ship.getPoint(), ship.getAngle(), ship.getVelocity());
+		
+		bullets.push_back(newBullet);
+	}
+
+	// Forward thrusting motion
+	if (ui.isUp())
+	{
+		if (ship.isAlive())
+		{
+			ship.setThrust(true);
+			ship.applyThrust();
+		}
+		else
+		{
+			ship.setThrust(false);
+		}	
+	}
+	else
+	{
+		ship.setThrust(false);
+	}
+}
+
+/*********************************************
+* GAME :: DRAW
+* Draw everything on the screen
+*********************************************/
+void Game::draw(const Interface & ui)
+{
+	// draw the rock
+	for (int i = 0; i < rocks.size(); i++)
+	{
+		if (rocks[i] != NULL && rocks[i]->isAlive())
+		{
+			rocks[i]->draw();
+		}
+	}
+	
+	// draw the rifle
+	ship.draw();
+
+	// draw the bullets, if they are alive
+	for (int i = 0; i < bullets.size(); i++)
+	{
+		if (bullets[i]->isAlive())
+		{
+			bullets[i]->draw();
+		}
+	}
+}
+
+// You may find this function helpful...
+
+/**********************************************************
+* Function: getClosestDistance
+* Description: Determine how close these two objects will
+*   get in between the frames.
+**********************************************************/
+
+float Game::getClosestDistance(const FlyingObject &obj1, const FlyingObject &obj2) const
+{
+	// find the maximum distance traveled
+	float dMax = max(abs(obj1.getVelocity().getDx()), abs(obj1.getVelocity().getDy()));
+	dMax = max(dMax, abs(obj2.getVelocity().getDx()));
+	dMax = max(dMax, abs(obj2.getVelocity().getDy()));
+	dMax = max(dMax, 0.1f); // when dx and dy are 0.0. Go through the loop once.
+
+	float distMin = std::numeric_limits<float>::max();
+	for (float i = 0.0; i <= dMax; i++)
+	{
+		Point point1(obj1.getPoint().getX() + (obj1.getVelocity().getDx() * i / dMax),
+			obj1.getPoint().getY() + (obj1.getVelocity().getDy() * i / dMax));
+		Point point2(obj2.getPoint().getX() + (obj2.getVelocity().getDx() * i / dMax),
+			obj2.getPoint().getY() + (obj2.getVelocity().getDy() * i / dMax));
+
+		float xDiff = point1.getX() - point2.getX();
+		float yDiff = point1.getY() - point2.getY();
+
+		float distSquared = (xDiff * xDiff) + (yDiff * yDiff);
+
+		distMin = min(distMin, distSquared);
+	}
+
+	return sqrt(distMin);
+}
+

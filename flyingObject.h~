@@ -1,0 +1,64 @@
+/***********************************************************************
+ * Header File:	FlyingObject.h
+ * Author:	Daniel R. Thomson
+ * Summary:	An abstract class that Rock, bullet and ship inherit from
+ ************************************************************************/
+
+#ifndef FLYINGOBJECT_H
+#define FLYINGOBJECT_H
+
+#include "point.h"
+#include "velocity.h"
+
+#define _USE_MATH_DEFINES
+#include <math.h> 
+
+#include "uiDraw.h"
+
+class FlyingObject
+{
+ public:
+  
+  FlyingObject();
+  FlyingObject(const Point pos, const Velocity motion);
+  ~FlyingObject();
+  
+  //Getters
+  Point getPoint() const { return pos; }
+  Velocity getVelocity() const { return motion; }
+  bool isAlive() const { return alive; }
+  
+  //Setters
+  void setPoint(Point pos);
+  void setVelocity(Velocity motion);
+  void setAlive(bool alive) { this->alive = alive; }
+  
+  //methods
+  void kill();
+  
+  //Vitual methods
+  virtual void draw() = 0;
+  virtual void advance(const int wrap)
+  {
+	  switch (wrap)
+	  {
+	  case 1:
+		  pos.setX(-pos.getX());		  
+		  break;
+	  case 2:
+		  pos.setY(-pos.getY());		 
+		  break;
+	  default:
+		  break;
+	  }
+	  pos.addX(motion.getDx());
+	  pos.addY(motion.getDy());
+  }
+  
+ protected:
+  Point pos;
+  Velocity motion;
+  bool alive;
+};
+
+#endif //FLYINGOBJECT_H

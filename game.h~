@@ -1,0 +1,87 @@
+/*********************************************************************
+ * File: game.h
+ * Description: Defines the game class for Asteroids
+ *********************************************************************/
+
+#ifndef GAME_H
+#define GAME_H
+#include <vector>
+
+#include "flyingObject.h"
+#include "point.h"
+#include "velocity.h"
+#include "ship.h"
+#include "rock.h"
+#include "bullet.h"
+#include "uiDraw.h"
+#include "uiInteract.h"
+
+#include "bigRock.h"
+#include "mediumRock.h"
+#include "smallRock.h"
+
+using namespace std;
+
+#define CLOSE_ENOUGH 15
+
+class Game
+{
+public:
+/*********************************************
+* Constructor
+* Initializes the game
+*********************************************/
+Game(Point tl, Point br);
+~Game();
+
+/*********************************************
+* Function: handleInput
+* Description: Takes actions according to whatever
+*  keys the user has pressed.
+*********************************************/
+void handleInput(const Interface & ui);
+
+/*********************************************
+* Function: advance
+* Description: Move everything forward one
+*  step in time.
+*********************************************/
+void advance();
+
+/*********************************************
+* Function: draw
+* Description: draws everything for the game.
+*********************************************/
+void draw(const Interface & ui);
+
+/**********************************************************
+* Function: getClosestDistance
+* Description: Determine how close these two objects will
+*   get in between the frames.
+**********************************************************/
+float getClosestDistance(const FlyingObject &obj1, const FlyingObject &obj2) const;
+
+private:
+
+	// The coordinates of the screen
+	Point topLeft;
+	Point bottomRight;
+
+	vector<Bullet*> bullets;
+	vector<Rock*> rocks;
+	Ship ship;
+
+	/*************************************************
+	* Private methods to help with the game logic.
+	*************************************************/
+	int wrapAround(const Point & point);
+	void advanceBullets();
+	void advanceRocks();
+	void advanceShip();
+	Rock* createRock();
+
+	void handleCollisions();
+	void cleanUpZombies();
+};
+
+#endif /* GAME_H */

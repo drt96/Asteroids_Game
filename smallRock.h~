@@ -1,0 +1,37 @@
+/***********************************************************************
+* Header File:	SmallRock.h
+* Author:		Daniel R. Thomson
+* Summary:		Class for Small astroids
+************************************************************************/
+
+#ifndef SMALLROCK_H
+#define SMALLROCK_H
+
+#include "rock.h"
+
+class SmallRock:
+	public Rock
+{
+public:
+	SmallRock();
+	SmallRock(const Point pos);
+	~SmallRock();
+
+
+	//overidden method
+	virtual void draw()
+	{
+		drawSmallAsteroid(pos, rotation);
+		rotation += 10;
+	}
+
+	virtual void hit()
+	{
+		setAlive(false);
+	}
+
+private:
+	static int rotation;
+};
+
+#endif /*SMALLROCK_H*/

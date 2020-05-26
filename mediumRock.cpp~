@@ -1,0 +1,30 @@
+/***********************************************************************
+* Implementation File:	MediumRock.cpp
+* Author:				Daniel R. Thomson
+* Summary:				Class for Medium astroids
+************************************************************************/
+
+#include "mediumRock.h"
+
+int MediumRock::rotation = MEDIUM_ROCK_SPIN; // static int rotation
+
+/*********************************************
+* MediumRock :: Default Constructor
+*********************************************/
+MediumRock::MediumRock(): Rock()
+{
+}
+
+/*********************************************
+* MediumRock :: Non-Default Constructor
+*********************************************/
+MediumRock::MediumRock(const Point pos): Rock(pos, motion)
+{
+}
+
+/*********************************************
+* MediumRock :: Destructor
+*********************************************/
+MediumRock::~MediumRock()
+{
+}
